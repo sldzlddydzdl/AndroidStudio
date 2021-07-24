@@ -1,0 +1,51 @@
+package example.com.temp_humi_graphs;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import example.com.temp_humi_graphs.chart.Mcu1Table;
+import example.com.temp_humi_graphs.chart.Mcu2Table;
+import example.com.temp_humi_graphs.chart.Mcu3Table;
+
+public class ChartMenu extends AppCompatActivity {
+    
+    public static final int REQUEST_CODE_MENU = 101;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.chart_select_menu);
+
+        Button chart1 = (Button) findViewById(R.id.NodeMcu1_Temp);
+        chart1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Mcu1Table.class);
+                startActivityForResult(intent, REQUEST_CODE_MENU);
+            }
+        });
+
+        Button chart2 = (Button) findViewById(R.id.NodeMcu2_Temp);
+        chart2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Mcu2Table.class);
+                startActivityForResult(intent, REQUEST_CODE_MENU);
+            }
+        });
+
+        Button chart3 = (Button) findViewById(R.id.NodeMcu3_Temp);
+        chart3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Mcu3Table.class);
+                startActivityForResult(intent, REQUEST_CODE_MENU);
+            }
+        });
+    }
+}
