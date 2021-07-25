@@ -1,0 +1,395 @@
+package example.com.temp_humi_graphs.chart;
+
+import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
+import example.com.temp_humi_graphs.CustomProgress;
+import example.com.temp_humi_graphs.R;
+import example.com.temp_humi_graphs.entity.Mcu1Data;
+
+public class Mcu1Table extends AppCompatActivity {
+
+
+    private TableLayout tableLayout;
+    private static String TAG = "getjson_MainActivity";
+    private static final String TAG_JSON = "dong1";
+    private static final String TAG_CNT = "cnt";
+    private static final String TAG_TEMP1 = "temp1";
+    private static final String TAG_TEMP2 = "temp2";
+    private static final String TAG_TEMP3 = "temp3";
+    private static final String TAG_HUMI1 = "humidity1";
+    private static final String TAG_HUMI2 = "humidity2";
+    private static final String TAG_HUMI3 = "humidity3";
+    private static final String TAG_CREATED_AT = "created_at";
+    String mJsonString;
+    TableRow tableRow;
+    CustomProgress customProgressDialog;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.mcu1table);
+
+
+
+        GetDataMcu1Temp getDataMcu1Temp = new GetDataMcu1Temp();
+        getDataMcu1Temp.execute("http://59.17.45.68/getjson.php");
+
+        //로딩창 객체 생성
+        customProgressDialog = new CustomProgress(this);
+        //로딩창을 투명하게
+        customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        customProgressDialog.setCancelable(false);
+
+        customProgressDialog.show();
+
+        Button refresh = (Button)findViewById(R.id.refresh);
+
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GetDataMcu1Temp getData2 = new GetDataMcu1Temp();
+                getData2.execute("http://59.17.45.68/getjson.php");
+                customProgressDialog.show();
+            }
+        });
+
+        Button back = (Button)findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
+    public class GetDataMcu1Temp extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+        String errorString = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = ProgressDialog.show(Mcu1Table.this,
+                    "Please Wait", null, true, true);
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            progressDialog.dismiss();
+
+//            if (result == null) {
+//
+//            } else {
+//                mJsonString = result;
+//                System.out.println("mJsonString : " + mJsonString.substring(6, 11));
+//                if (mJsonString.substring(6, 11).equals("dong1")) {
+//                    tableLayout = (TableLayout) findViewById(R.id.tableLayout);
+//
+//
+//                    for (int i = 0; i < dataValues1().size(); i++) {
+//
+//                        tableRow = new TableRow(getApplicationContext());
+//                        tableRow.setLayoutParams(new TableRow.LayoutParams(
+//                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                                ViewGroup.LayoutParams.WRAP_CONTENT
+//                        ));
+//
+//                        TextView textView = new TextView(getApplicationContext());
+//                        textView.setText(String.valueOf(dataValues1().get(i).getCnt()));
+//                        textView.setGravity(Gravity.CENTER);
+//                        textView.setTextSize(18);
+//                        textView.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView);
+//
+//                        TextView textView2 = new TextView(getApplicationContext());
+//                        textView2.setText(String.valueOf(dataValues1().get(i).getTemp1()));
+//                        textView2.setGravity(Gravity.CENTER);
+//                        textView2.setTextSize(18);
+//                        textView2.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView2);
+//
+//                        TextView textView3 = new TextView(getApplicationContext());
+//                        textView3.setText(String.valueOf(dataValues1().get(i).getHumidity1()));
+//                        textView3.setGravity(Gravity.CENTER);
+//                        textView3.setTextSize(18);
+//                        textView3.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView3);
+//
+//                        TextView textView4 = new TextView(getApplicationContext());
+//                        textView4.setText(String.valueOf(dataValues1().get(i).getTemp2()));
+//                        textView4.setGravity(Gravity.CENTER);
+//                        textView4.setTextSize(18);
+//                        textView4.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView4);
+//
+//                        TextView textView5 = new TextView(getApplicationContext());
+//                        textView5.setText(String.valueOf(dataValues1().get(i).getHumidity2()));
+//                        textView5.setGravity(Gravity.CENTER);
+//                        textView5.setTextSize(18);
+//                        textView5.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView5);
+//
+//                        TextView textView6 = new TextView(getApplicationContext());
+//                        textView6.setText(String.valueOf(dataValues1().get(i).getTemp3()));
+//                        textView6.setGravity(Gravity.CENTER);
+//                        textView6.setTextSize(18);
+//                        textView6.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView6);
+//
+//                        TextView textView7 = new TextView(getApplicationContext());
+//                        textView7.setText(String.valueOf(dataValues1().get(i).getHumidity3()));
+//                        textView7.setGravity(Gravity.CENTER);
+//                        textView7.setTextSize(18);
+//                        textView7.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView7);
+//
+//                        TextView textView8 = new TextView(getApplicationContext());
+//                        textView8.setText(String.valueOf(dataValues1().get(i).getCreatedAt()));
+//                        textView8.setGravity(Gravity.CENTER);
+//                        textView8.setTextSize(18);
+//                        textView8.setBackgroundResource(R.drawable.table_inside);
+//                        tableRow.addView(textView8);
+//
+//                        tableLayout.addView(tableRow);
+//                    }
+//                }
+
+                if (result == null) {
+
+                } else {
+                    mJsonString = result;
+                    System.out.println("mJsonString : " + mJsonString.substring(6, 11));
+                    if (mJsonString.substring(6, 11).equals("dong1")) {
+                        tableLayout = (TableLayout) findViewById(R.id.tableLayout);
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(mJsonString);
+                            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+                            // 여기서 값 고쳐야 어디까지 받을지 정할수있음.
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject item = jsonArray.getJSONObject(i);
+
+                                String cnt = item.getString(TAG_CNT);
+                                String temp1 = item.getString(TAG_TEMP1);
+                                String humi1 = item.getString(TAG_HUMI1);
+                                String temp2 = item.getString(TAG_TEMP2);
+                                String humi2 = item.getString(TAG_HUMI2);
+                                String temp3 = item.getString(TAG_TEMP3);
+                                String humi3 = item.getString(TAG_HUMI3);
+                                String createdAt = item.getString(TAG_CREATED_AT);
+
+                                tableRow = new TableRow(getApplicationContext());
+                                tableRow.setLayoutParams(new TableRow.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT
+                                ));
+
+                                TextView textView = new TextView(getApplicationContext());
+                                textView.setText(cnt);
+                                textView.setGravity(Gravity.CENTER);
+                                textView.setTextSize(18);
+                                textView.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView);
+
+                                TextView textView2 = new TextView(getApplicationContext());
+                                textView2.setText(temp1);
+                                textView2.setGravity(Gravity.CENTER);
+                                textView2.setTextSize(18);
+                                textView2.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView2);
+
+                                TextView textView3 = new TextView(getApplicationContext());
+                                textView3.setText(humi1);
+                                textView3.setGravity(Gravity.CENTER);
+                                textView3.setTextSize(18);
+                                textView3.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView3);
+
+                                TextView textView4 = new TextView(getApplicationContext());
+                                textView4.setText(temp2);
+                                textView4.setGravity(Gravity.CENTER);
+                                textView4.setTextSize(18);
+                                textView4.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView4);
+
+                                TextView textView5 = new TextView(getApplicationContext());
+                                textView5.setText(humi2);
+                                textView5.setGravity(Gravity.CENTER);
+                                textView5.setTextSize(18);
+                                textView5.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView5);
+
+                                TextView textView6 = new TextView(getApplicationContext());
+                                textView6.setText(temp3);
+                                textView6.setGravity(Gravity.CENTER);
+                                textView6.setTextSize(18);
+                                textView6.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView6);
+
+                                TextView textView7 = new TextView(getApplicationContext());
+                                textView7.setText(humi3);
+                                textView7.setGravity(Gravity.CENTER);
+                                textView7.setTextSize(18);
+                                textView7.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView7);
+
+                                TextView textView8 = new TextView(getApplicationContext());
+                                textView8.setText(createdAt);
+                                textView8.setGravity(Gravity.CENTER);
+                                textView8.setTextSize(18);
+                                textView8.setBackgroundResource(R.drawable.table_inside);
+                                tableRow.addView(textView8);
+
+                                tableLayout.addView(tableRow);
+                            }
+                        } catch (JSONException e) {
+
+                            Log.d(TAG, "showResult : ", e);
+                        }
+                    }
+            }
+            customProgressDialog.dismiss();
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String serverURL = params[0];
+
+            try {
+
+                URL url = new URL(serverURL);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+                httpURLConnection.connect();
+
+                int responseStatusCode = httpURLConnection.getResponseCode();
+
+                InputStream inputStream;
+                if (responseStatusCode == HttpURLConnection.HTTP_OK) {
+                    inputStream = httpURLConnection.getInputStream();
+                } else {
+                    inputStream = httpURLConnection.getErrorStream();
+                }
+
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                bufferedReader.close();
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+
+                Log.d(TAG, "InsertData: Error ", e);
+                errorString = e.toString();
+
+                return null;
+            }
+        }
+
+//        private ArrayList<Mcu1Data> dataValues1() {
+//            ArrayList<Mcu1Data> dataVals = new ArrayList<>();
+//            try {
+//                JSONObject jsonObject = new JSONObject(mJsonString);
+//                JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+//
+//                // 여기서 값 고쳐야 어디까지 받을지 정할수있음.
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject item = jsonArray.getJSONObject(i);
+//
+//                    String cnt = item.getString(TAG_CNT);
+//                    String temp1 = item.getString(TAG_TEMP1);
+//                    String humi1 = item.getString(TAG_HUMI1);
+//                    String temp2 = item.getString(TAG_TEMP2);
+//                    String humi2 = item.getString(TAG_HUMI2);
+//                    String temp3 = item.getString(TAG_TEMP3);
+//                    String humi3 = item.getString(TAG_HUMI3);
+//                    String createdAt = item.getString(TAG_CREATED_AT);
+//
+//                }
+//            } catch (JSONException e) {
+//
+//                Log.d(TAG, "showResult : ", e);
+//            }
+//
+//            return dataVals;
+//
+//        }
+
+//        private ArrayList<Mcu1Data> dataValues1() {
+//            ArrayList<Mcu1Data> dataVals = new ArrayList<>();
+//            try {
+//                JSONObject jsonObject = new JSONObject(mJsonString);
+//                JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+//
+//                // 여기서 값 고쳐야 어디까지 받을지 정할수있음.
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject item = jsonArray.getJSONObject(i);
+//
+//                    String cnt = item.getString(TAG_CNT);
+//                    String temp1 = item.getString(TAG_TEMP1);
+//                    String humi1 = item.getString(TAG_HUMI1);
+//                    String temp2 = item.getString(TAG_TEMP2);
+//                    String humi2 = item.getString(TAG_HUMI2);
+//                    String temp3 = item.getString(TAG_TEMP3);
+//                    String humi3 = item.getString(TAG_HUMI3);
+//                    String createdAt = item.getString(TAG_CREATED_AT);
+//
+//                    dataVals.add(new Mcu1Data(
+//                            Integer.parseInt(cnt), Float.parseFloat(temp1), Float.parseFloat(humi1)
+//                            , Float.parseFloat(temp2), Float.parseFloat(humi2)
+//                            , Float.parseFloat(temp3), Float.parseFloat(humi3)
+//                            , createdAt
+//                    ));
+//                }
+//            } catch (JSONException e) {
+//
+//                Log.d(TAG, "showResult : ", e);
+//            }
+//
+//            return dataVals;
+//
+//        }
+
+
+    }
+}
