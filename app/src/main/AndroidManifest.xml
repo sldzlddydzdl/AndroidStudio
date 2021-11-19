@@ -18,16 +18,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ShowMcu1Temp" />
-        <activity android:name=".ShowMcu1Humi" />
-        <activity android:name=".ShowMcu2Temp" />
-        <activity android:name=".ShowMcu2Humi" />
-        <activity android:name=".ShowMcu3Temp" />
-        <activity android:name=".ShowMcu3Humi" />
-        <activity android:name=".ShowMcu4Temp" />
-        <activity android:name=".ShowMcu4Humi" />
+        <!-- 페이지이동 위한 페이지 등록 -->
+        <activity android:name=".graph.ShowMcu1Temp" />
+        <activity android:name=".graph.ShowMcu1Humi" />
+        <activity android:name=".graph.ShowMcu2Temp" />
+        <activity android:name=".graph.ShowMcu2Humi" />
+        <activity android:name=".graph.ShowMcu3Temp" />
+        <activity android:name=".graph.ShowMcu3Humi" />
+        <activity android:name=".chart.Mcu1Table"/>
+        <activity android:name=".chart.Mcu2Table"/>
+        <activity android:name=".chart.Mcu3Table"/>
+        <activity android:name=".GraphMenu"/>
+        <activity android:name=".ChartMenu"/>
+        <activity android:name=".CoolerController"/>
+
     </application>
 
+    <!-- 인터넷 권한 설정 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
